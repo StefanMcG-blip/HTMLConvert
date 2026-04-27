@@ -121,6 +121,14 @@
           }
           continue;
         }
+
+        // Remove any lines that start with a plus sign and avoid inserting extra blank lines.
+        if (/^\+/.test(line)) {
+          if (i + 1 < lines.length && lines[i + 1].trim() === '' && newLines.length && newLines[newLines.length - 1].trim() === '') {
+            i += 1;
+          }
+          continue;
+        }
         
         newLines.push(line);
       }
