@@ -76,6 +76,7 @@
             if (lowerMatch) {
               let lower = lowerMatch[1];
               let upper = cleanedRange.substring(lower.length).trim();
+              upper = upper.replace(/^[–—-]\s*/, '');
               newLines.push(lower);
               newLines.push("—");
               newLines.push(upper);
@@ -106,6 +107,11 @@
         // Normalize token names that begin with a leading dollar sign.
         if (/^\$WIF/i.test(line)) {
           line = line.slice(1);
+        }
+
+        // Remove leading dash-like characters from lines like "– 0.0184".
+        if (/^[–—-]\s+/.test(line)) {
+          line = line.replace(/^[–—-]\s+/, '');
         }
         
         newLines.push(line);
