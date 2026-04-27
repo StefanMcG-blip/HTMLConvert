@@ -113,6 +113,14 @@
         if (/^[–—-]\s+/.test(line)) {
           line = line.replace(/^[–—-]\s+/, '');
         }
+
+        // Remove N/A lines and skip the following blank line.
+        if (line === 'N/A') {
+          if (i + 1 < lines.length && lines[i + 1].trim() === '') {
+            i += 1;
+          }
+          continue;
+        }
         
         newLines.push(line);
       }
