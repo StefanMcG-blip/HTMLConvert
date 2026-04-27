@@ -104,6 +104,32 @@
           }
         }
 
+        // Remove a known intro block for deposited assets / liquidity positions.
+        if (line === 'View and manage your deposited assets for Liquidity Pools and Vaults') {
+          let skipCount = 4; // Total lines in the block after this one
+          while (skipCount > 0 && i + 1 < lines.length) {
+            i += 1;
+            skipCount -= 1;
+          }
+          if (i + 1 < lines.length && lines[i + 1].trim() === '') {
+            i += 1;
+          }
+          continue;
+        }
+
+        // Remove any stray Vault Positions line and the following blank line.
+        if (line === 'Vault Positions') {
+          if (i + 1 < lines.length && lines[i + 1].trim() === '') {
+            i += 1;
+          }
+          continue;
+        }
+
+        // Normalize Total Liquidity Value to Total Value.
+        if (line === 'Total Liquidity Value') {
+          line = 'Total Value';
+        }
+
         // Normalize token names that begin with a leading dollar sign.
         if (/^\$WIF/i.test(line)) {
           line = line.slice(1);
