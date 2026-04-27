@@ -140,6 +140,17 @@
           line = line.replace(/^[–—-]\s+/, '');
         }
 
+        // Replace infinity with em dash, update the previous zero line,
+        // and insert a new line with 0.05 after the dash.
+        if (line === '∞') {
+          if (newLines.length && /^0(?:\.0*)?$/.test(newLines[newLines.length - 1].trim())) {
+            newLines[newLines.length - 1] = newLines[newLines.length - 1].replace(/^0(?:\.0*)?$/, '0.003');
+          }
+          newLines.push('—');
+          newLines.push('0.05');
+          continue;
+        }
+
         // Remove N/A lines and skip the following blank line.
         if (line === 'N/A') {
           if (i + 1 < lines.length && lines[i + 1].trim() === '') {
