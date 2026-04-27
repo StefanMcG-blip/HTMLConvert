@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orca File Cleaner - Paste Raw Data</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    textarea { width: 100%; height: 300px; margin-bottom: 1em; padding: 10px; font-family: monospace; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h2>Paste Your Raw Data Below</h2>
+  <textarea id="raw-input" placeholder="Paste raw data here..."></textarea>
+  <br>
+  <button id="clean-btn">Clean Data</button>
+  <h3>Cleaned Output:</h3>
+  <pre id="output"></pre>
+  
+  <script>
+    // V4 Cleaning Logic
+    function cleanData(text) {
+      // 1. Remove extraneous header text: keep content starting from "Portfolio".
+      let startIndex = text.indexOf("Portfolio");
+      if (startIndex !== -1) {
+        text = text.substring(startIndex);
+      }
+      
+      // Split text into lines.
+      let lines = text.split('\n');
+      let newLines = [];
+      let poolCounts = {};
+
+      // Process each line.
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        
+        // Skip lines that are just a dash.
+        if (line === "-") {
+          newLines.push(line);
+          continue;
+        }
+
+        // Rule for range lines with "k": e.g. "86.68k102.1k+5.89%+24.66%"
+        if (/[-+]\d+\.\d+%/.test(line) && /k/i.test(line)) {
+          // Look for two numbers ending with "k" at the beginning.
+          let matchK = line.match(/^(\d+(?:\.\d+)?)k(\d+(?:\.\d+)?)k/i);
+          if (matchK) {
+            let lowerStr = matchK[1]; // e.g. "86.68"
+            let upperStr = matchK[2]; // e.g. "102.1"
+            // Convert to whole numbers.
+            let lowerVal = Math.round(parseFloat(lowerStr) * 1000);
+            let upperVal = Math.round(parseFloat(upperStr) * 1000);
+            newLines.push(lowerVal.toString());
+            newLines.push("—");
+            newLines.push(upperVal.toString());
+            continue; // Skip further processing for this line.
+          }
+        }
+        
+        // Rule for range lines without "k" but with inline percentages.
+        if (/[-+]\d+\.\d+%/.test(line)) {
+          // If the next line is a price line, use its precision.
+          if (i + 1 < lines.length && /(USDC per|SOL per)/.test(lines[i + 1])) {
+            let priceLine = lines[i + 1].trim();
+            let priceMatch = priceLine.match(/(\d+\.(\d+))/);
+            let precision = priceMatch ? priceMatch[2].length : 2;
+            
+            // Remove inline percentage differences.
+            let cleanedRange = line.replace(/[-+]\d+\.\d+%/g, '');
+            // Expect cleanedRange like "100.03131.09" or "122.91181.1".
+            // Match the lower bound with the given precision.
+            let regexLower = new RegExp("^(\\d+\\.\\d{" + precision + "})");
+            let lowerMatch = cleanedRange.match(regexLower);
+            if (lowerMatch) {
+              let lower = lowerMatch[1];
+              let upper = cleanedRange.substring(lower.length).trim();
+              newLines.push(lower);
+              newLines.push("—");
+              newLines.push(upper);
+              continue;
+            }
+          }
+        }
+        
+        // For price lines that include "k" (e.g. "81.87k USDC per cbBTC"), convert the k value.
+        if (/(USDC per|SOL per)/.test(line) && /k/i.test(line)) {
+          line = line.replace(/(\d+(?:\.\d+)?)k/gi, (m, num) => {
+            return Math.round(parseFloat(num) * 1000).toString();
+          });
+        }
+        
+        // (Optional) Process duplicate pool names if they start with "Pool:".
+        if (/^Pool\s*:\s*/i.test(line)) {
+          let parts = line.split(':');
+          if (parts.length >= 2) {
+            let poolName = parts[1].trim();
+            poolCounts[poolName] = (poolCounts[poolName] || 0) + 1;
+            if (poolCounts[poolName] > 1) {
+              line = "Pool: " + poolName + poolCounts[poolName];
+            }
+          }
+        }
+        
+        newLines.push(line);
+      }
+      
+      // Reassemble lines (preserving the original blank line structure)
+      let result = newLines.join('\n');
+      return result;
+    }
+    
+    // Set up the button event
+    document.getElementById("clean-btn").addEventListener("click", function() {
+      let rawText = document.getElementById("raw-input").value;
+      let cleanedText = cleanData(rawText);
+      document.getElementById("output").textContent = cleanedText;
+    });
+  </script>
+</body>
+</html>
