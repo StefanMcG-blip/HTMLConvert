@@ -77,6 +77,7 @@
               let lower = lowerMatch[1];
               let upper = cleanedRange.substring(lower.length).trim();
               upper = upper.replace(/^[–—-]\s*/, '');
+              upper = upper.replace(/^\.(\d+)/, '0.$1');
               newLines.push(lower);
               newLines.push("—");
               newLines.push(upper);
@@ -138,6 +139,11 @@
         // Remove leading dash-like characters from lines like "– 0.0184".
         if (/^[–—-]\s+/.test(line)) {
           line = line.replace(/^[–—-]\s+/, '');
+        }
+
+        // Add a leading zero to fractional values like ".0013".
+        if (/^\.\d+/.test(line)) {
+          line = '0' + line;
         }
 
         // Replace infinity with em dash, update the previous zero line,
