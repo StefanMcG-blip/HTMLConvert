@@ -1,22 +1,23 @@
 # Orca Converter Cleaner
 
-This repository contains a lightweight HTML-based data cleaner for Orca portfolio raw text.
+A lightweight HTML-based cleaner for Orca portfolio raw data. It parses pasted text, removes interface noise, and normalizes numeric output for easier downstream processing.
 
 ## Purpose
 
-The tool accepts pasted raw portfolio data and transforms it into a simplified cleaned output by removing UI clutter, normalizing numeric ranges, and filtering irrelevant lines.
+This tool simplifies Orca raw portfolio data by keeping only relevant portfolio and pool entries, cleaning malformed numeric values, and removing unneeded UI blocks.
 
 ## Key behaviors
 
-- Keeps content starting from the first `Portfolio` entry.
-- Normalizes range values and splits them into lower/upper values separated by `—`.
+- Starts processing from the first `Portfolio` entry.
+- Normalizes range values and splits lower/upper bounds with `—`.
 - Converts `k` units in price lines into full numeric values.
-- Removes known header and footer blocks such as deposit asset intro text and `Vault Positions`.
+- Removes known header/footer blocks, including deposit asset intro text and `Vault Positions`.
 - Replaces `Total Liquidity Value` with `Total Value`.
 - Strips leading `$` from token names like `$WIF`.
-- Removes leading dash-like prefixes from numeric lines such as `– 0.0184`.
+- Removes leading dash-like prefixes from numeric values such as `– 0.0184`.
+- Adds a leading zero to fractional values like `.0013`.
 - Replaces `∞` with `—`, updates the preceding `0` to `0.003`, and inserts a new `0.05` line after the dash.
-- Removes `N/A` lines and lines starting with `+` without adding extra blank lines.
+- Removes `N/A` lines and lines beginning with `+` without introducing extra blank lines.
 
 ## Usage
 
@@ -24,4 +25,4 @@ Open `_TML orca converter V4.6 _2026.04.27.html` in a browser, paste raw data in
 
 ## Notes
 
-This file is intentionally self-contained with inline CSS and JavaScript for quick edits and testing.
+The cleaner is self-contained in a single HTML file with inline CSS and JavaScript for simple editing and testing.
