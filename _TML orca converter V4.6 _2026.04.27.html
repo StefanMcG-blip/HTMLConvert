@@ -141,19 +141,24 @@
           line = line.replace(/^[–—-]\s+/, '');
         }
 
+        // Remove any literal '<' characters from the line.
+        if (line.includes('<')) {
+          line = line.replace(/</g, '');
+        }
+
         // Add a leading zero to fractional values like ".0013".
         if (/^\.\d+/.test(line)) {
           line = '0' + line;
         }
 
         // Replace infinity with em dash, update the previous zero line,
-        // and insert a new line with 0.05 after the dash.
+        // and insert a normalized raw value after the dash.
         if (line === '∞') {
           if (newLines.length && /^0(?:\.0*)?$/.test(newLines[newLines.length - 1].trim())) {
-            newLines[newLines.length - 1] = newLines[newLines.length - 1].replace(/^0(?:\.0*)?$/, '0.003');
+            newLines[newLines.length - 1] = newLines[newLines.length - 1].replace(/^0(?:\.0*)?$/, '0.0663');
           }
           newLines.push('—');
-          newLines.push('0.05');
+          newLines.push('0.0463');
           continue;
         }
 
