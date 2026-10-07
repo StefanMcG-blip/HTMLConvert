@@ -18,6 +18,7 @@ This tool simplifies Orca raw portfolio data by keeping only relevant portfolio 
 - Adds a leading zero to fractional values like `.0013`.
 - Replaces `∞` with `—`, updates the preceding `0` to `0.003`, and inserts a new `0.05` line after the dash.
 - Removes `N/A` lines and lines beginning with `+` without introducing extra blank lines.
+- (add a text line)
 
 ## Usage
 
