@@ -170,8 +170,8 @@
           continue;
         }
 
-        // Remove any lines that start with a plus sign or a negative dollar value and avoid inserting extra blank lines.
-        if (/^(?:\+|\$-|\-\$)/.test(line)) {
+        // Remove any lines that start with a plus sign, negative dollar value, or negative percentage value.
+        if (/^(?:\+|\$-|\-\$|\-\d+(?:\.\d+)?%)/.test(line)) {
           if (i + 1 < lines.length && lines[i + 1].trim() === '' && newLines.length && newLines[newLines.length - 1].trim() === '') {
             i += 1;
           }
