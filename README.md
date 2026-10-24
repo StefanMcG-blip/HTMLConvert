@@ -22,6 +22,7 @@ This tool simplifies Orca raw portfolio data by keeping only relevant portfolio 
 ## Usage
 
 Open `_TML orca converter V4.6 _2026.04.27.html` in a browser, paste raw data into the textarea, and click `Clean Data` to view the cleaned result.
+review the text and edit if needed
 
 ## Notes
 
